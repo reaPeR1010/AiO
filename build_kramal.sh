@@ -4,7 +4,7 @@ set -e
 KERNEL_DIR="$(pwd)"
 CHAT_ID="-1002295046200"
 TOKEN="7911765578:AAFN90U-GMGmzf5TINpbZKG8C0SuiKmRi_I"
-COMPILER="clang"
+COMPILER="aosp"
 
 # Deps
 if [ $COMPILER = "clang" ];
