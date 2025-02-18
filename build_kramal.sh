@@ -36,7 +36,7 @@ PATH="${KERNEL_DIR}/aosp-clang/bin:${KERNEL_DIR}/gcc/bin:${KERNEL_DIR}/gcc32/bin
 fi
 
 git clone https://github.com/reaPeR1010/AnyKernel3 --depth=1
-
+curl -LSs "https://raw.githubusercontent.com/rifsxd/KernelSU-Next/next-susfs/kernel/setup.sh" | bash -s next-susfs
 # VARS
 DEVICE="Miatoll"
 KERVER=$(make kernelversion)
