@@ -1,20 +1,22 @@
 name: KramalCI
+
 on:
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    container: nexgang/ubuntu:latest
+
     steps:
-      - uses: actions/checkout@v4
-      - name: Install dependencies
-        run: |
-          sudo apt-get update && sudo apt-get install --no-install-recommends -y -qq --fix-missing git bison flex libxml2 libssl-dev bc zip default-jre python3 python3-pip wget curl cpio bash ccache
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
       - name: Build Kernel
-        run: |
-          git clone --depth=1 -b positron https://reaPeR1010:$TOKEN@github.com/reaPeR1010/android_kernel_xiaomi_sm6250.git kernel
-          mv build_kramal.sh kernel
-          cd kernel
-          bash build_kramal.sh
         env:
           TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          git clone --depth=1 -b positron https://reaPeR1010:${TOKEN}@github.com/reaPeR1010/android_kernel_xiaomi_sm6250.git kernel
+          mv build_kramal.sh kernel/
+          cd kernel
+          bash build_kramal.sh
