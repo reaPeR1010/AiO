@@ -12,11 +12,46 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Build Kernel
+      - name: Set up ccache
+        run: |
+          echo "CCACHE_DIR=${{ github.workspace }}/.ccache" >> $GITHUB_ENV
+          echo "PATH=/usr/lib/ccache/bin:$PATH" >> $GITHUB_ENV
+          mkdir -p ${{ github.workspace }}/.ccache
+          ccache --max-size=5G
+
+      - name: Restore ccache from cache
+        id: cache-ccache-restore
+        uses: actions/cache/restore@v4
+        with:
+          path: ${{ github.workspace }}/.ccache
+          key: ccache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            ccache-${{ runner.os }}-${{ github.ref_name }}
+            ccache-${{ runner.os }}-
+
+      - name: Display initial ccache stats
+        run: ccache --show-stats
+
+      - name: Clone Kernel Repository
         env:
           TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
           git clone --depth=1 -b positron https://reaPeR1010:${TOKEN}@github.com/reaPeR1010/android_kernel_xiaomi_sm6250.git kernel
           mv build_kramal.sh kernel/
+
+      - name: Build Kernel
+        run: |
           cd kernel
           bash build_kramal.sh
+
+      - name: Display final ccache stats
+        run: |
+          echo "======= FINAL CCACHE STATS ======="
+          ccache --show-stats
+
+      - name: Save ccache to cache
+        uses: actions/cache/save@v4
+        if: always()
+        with:
+          path: ${{ github.workspace }}/.ccache
+          key: ccache-${{ runner.os }}-${{ github.sha }}
