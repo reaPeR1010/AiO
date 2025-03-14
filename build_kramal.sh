@@ -15,9 +15,8 @@ DTB=${KERNEL_DIR}/out/arch/arm64/boot/dts/qcom/cust-atoll-ab.dtb
 ZIPNAME="kramal"
 TANGGAL=$(date +"%F%S")
 FINAL_ZIP="${ZIPNAME}-${VERSION}-${KERVER}-${DEVICE}-${TANGGAL}.zip"
-COMPILER="llvm"
+COMPILER="aosp"
 VERBOSE=0
-USE_CCACHE=1  # Set to 1 to enable ccache, 0 to disable
 
 # Telegram messaging function
 telegram_push() {
@@ -49,7 +48,6 @@ fi
 
 # Get AnyKernel3 and KSU
 git clone https://github.com/reaPeR1010/AnyKernel3 --depth=1
-curl -LSs "https://raw.githubusercontent.com/rifsxd/KernelSU-Next/next/kernel/setup.sh" | bash -
 
 # Export Vars
 KBUILD_BUILD_HOST="ArchLinux"
@@ -61,50 +59,23 @@ export KBUILD_COMPILER_STRING KBUILD_BUILD_USER KBUILD_BUILD_HOST PROCS
 function compile() {
     START=$(date +"%s")
     MAKE_OPT=()
-    
-    # If ccache is enabled, use it for compilation
-    if [[ $USE_CCACHE -eq 1 ]]; then
-        # Set ccache directory - works both in CI and local builds
-        if [[ -n "${GITHUB_WORKSPACE}" ]]; then
-            export CCACHE_DIR="${GITHUB_WORKSPACE}/.ccache"
-        else
-            export CCACHE_DIR="${KERNEL_DIR}/.ccache"
-        fi
-        
-        export CCACHE_BASEDIR="$KERNEL_DIR"
-        export CCACHE_COMPRESS=1
-        export CCACHE_COMPRESSLEVEL=5
-        export CCACHE_MAXSIZE=5G
-        CCACHE_EXEC=$(which ccache)
-        
-        # Show ccache stats at the beginning
-        echo "======= CCACHE STATS BEFORE BUILD ======="
-        $CCACHE_EXEC -s
-        
-        MAKE_OPT+=(CC="${CCACHE_EXEC} clang" CXX="${CCACHE_EXEC} clang++" HOSTCC="${CCACHE_EXEC} clang" HOSTCXX="${CCACHE_EXEC} clang++")
-    else
-        MAKE_OPT+=(CC=clang CXX=clang HOSTCC=clang HOSTCXX=clang++)
-    fi
-    
+
     # Add compiler-specific flags
     if [ "$COMPILER" = "llvm" ]; then
         MAKE_OPT+=(CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi-)
     elif [ "$COMPILER" = "aosp" ]; then
         MAKE_OPT+=(CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=aarch64-linux-android- CROSS_COMPILE_ARM32=arm-linux-androideabi-)
     fi
+
+    MAKE_OPT+=(CC=clang CXX=clang HOSTCC=clang HOSTCXX=clang++)
     MAKE_OPT+=(LD=ld.lld AR=llvm-ar NM=llvm-nm OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip READELF=llvm-readelf OBJSIZE=llvm-size)
-    
-    make O=out ARCH=arm64 $DEFCONFIG
+
+    make O=out ARCH=arm64 $DEFCONFIG LLVM=1
     make -kj"$PROCS" O=out ARCH=arm64 LLVM_IAS=1 V=$VERBOSE "${MAKE_OPT[@]}" 2>&1 | tee error.log
-    
+
     END=$(date +"%s")
     DIFF=$((END - START))
-    
-    # Show ccache stats after build if enabled
-    if [[ $USE_CCACHE -eq 1 ]]; then
-        echo "======= CCACHE STATS AFTER BUILD ======="
-        $CCACHE_EXEC -s
-    fi
+
 }
 function zipping() {
     if [ ! -f "$IMAGE" ]; then
