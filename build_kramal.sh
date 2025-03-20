@@ -38,7 +38,7 @@ if [ "$COMPILER" = "llvm" ]; then
 elif [ "$COMPILER" = "aosp" ]; then
     mkdir clang
     cd clang || exit
-    wget -q https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/master/clang-r547379.tar.gz
+    wget -q https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/master/clang-r522817.tar.gz
     tar -xf clang*
     cd "$KERNEL_DIR" || exit 1
     git clone https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9.git --depth=1 gcc
