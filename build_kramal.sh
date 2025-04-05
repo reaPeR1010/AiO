@@ -36,14 +36,14 @@ if [ "$COMPILER" = "llvm" ]; then
     cd "$KERNEL_DIR" || exit 1
     PATH="${KERNEL_DIR}/clang/bin:$PATH"
 elif [ "$COMPILER" = "aosp" ]; then
-    mkdir clang
-    cd clang || exit
-    wget -q https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/master/clang-r522817.tar.gz
-    tar -xf clang*
-    cd "$KERNEL_DIR" || exit 1
+#    mkdir clang
+#    cd clang || exit
+#    wget -q https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/master/clang-r522817.tar.gz
+#    tar -xf clang*
+#    cd "$KERNEL_DIR" || exit 1
     git clone https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9.git --depth=1 gcc
     git clone https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_arm_arm-linux-androideabi-4.9.git --depth=1 gcc32
-    PATH="${KERNEL_DIR}/clang/bin:${KERNEL_DIR}/gcc/bin:${KERNEL_DIR}/gcc32/bin:${PATH}"
+    PATH="${KERNEL_DIR}/gcc/bin:${KERNEL_DIR}/gcc32/bin:${PATH}"
 fi
 
 # Get AnyKernel3 and KSU
@@ -52,7 +52,7 @@ git clone https://github.com/reaPeR1010/AnyKernel3 --depth=1
 # Export Vars
 KBUILD_BUILD_HOST="ArchLinux"
 KBUILD_BUILD_USER="RoHaNRaJ"
-KBUILD_COMPILER_STRING=$("${KERNEL_DIR}"/clang/bin/clang --version | head -n 1 | perl -pe 's/http.*?//gs' | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')
+KBUILD_COMPILER_STRING=$(clang --version | head -n 1 | perl -pe 's/http.*?//gs' | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')
 PROCS=$(nproc --all)
 export KBUILD_COMPILER_STRING KBUILD_BUILD_USER KBUILD_BUILD_HOST PROCS
 
@@ -67,7 +67,7 @@ function compile() {
         MAKE_OPT+=(CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=aarch64-linux-android- CROSS_COMPILE_ARM32=arm-linux-androideabi-)
     fi
 
-    MAKE_OPT+=(CC=clang CXX=clang HOSTCC=clang HOSTCXX=clang++)
+    MAKE_OPT+=(CC=clang CXX=clang++ HOSTCC=clang HOSTCXX=clang++)
     MAKE_OPT+=(LD=ld.lld AR=llvm-ar NM=llvm-nm OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip READELF=llvm-readelf OBJSIZE=llvm-size)
 
     make O=out ARCH=arm64 $DEFCONFIG LLVM=1
