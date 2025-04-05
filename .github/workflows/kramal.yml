@@ -16,7 +16,7 @@ jobs:
         env:
           TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
-          git clone --depth=1 -b test https://reaPeR1010:${TOKEN}@github.com/reaPeR1010/android_kernel_xiaomi_sm6250.git kernel
+          git clone --depth=1 -b main https://reaPeR1010:${TOKEN}@github.com/reaPeR1010/android_kernel_xiaomi_sm6250.git kernel
           mv build_kramal.sh kernel/
           cd kernel
           bash build_kramal.sh
