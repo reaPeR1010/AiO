@@ -12,11 +12,37 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
+      - name: Restore ccache cache
+        uses: actions/cache/restore@v4
+        with:
+          path: ~/.ccache
+          key: kc-ccache-${{ runner.os }}-${{ github.ref }}-${{ github.run_id }}
+          restore-keys: |
+            kc-ccache-${{ runner.os }}-${{ github.ref }}-
+            kc-ccache-${{ runner.os }}-
+
+      - name: Setup ccache
+        run: |
+          export CCACHE_DIR=~/.ccache
+          export CCACHE_MAXSIZE=5G
+          ccache -z
+
       - name: Build Kernel
         env:
           TOKEN: ${{ secrets.GH_TOKEN }}
+          CCACHE_EXEC: ccache
         run: |
           git clone --depth=1 -b main https://reaPeR1010:${TOKEN}@github.com/reaPeR1010/android_kernel_xiaomi_sm6250.git kernel
           mv build_kramal.sh kernel/
           cd kernel
           bash build_kramal.sh
+
+      - name: Show ccache stats
+        run: ccache -s
+
+      - name: Save ccache cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: ~/.ccache
+          key: kc-ccache-${{ runner.os }}-${{ github.ref }}-${{ github.run_id }}

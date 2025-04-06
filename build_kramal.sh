@@ -67,7 +67,7 @@ function compile() {
         MAKE_OPT+=(CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=aarch64-linux-android- CROSS_COMPILE_ARM32=arm-linux-androideabi-)
     fi
 
-    MAKE_OPT+=(CC=clang CXX=clang++ HOSTCC=clang HOSTCXX=clang++)
+    MAKE_OPT+=(CC="ccache clang" CXX="ccache clang++" HOSTCC="ccache clang" HOSTCXX="ccache clang++")
     MAKE_OPT+=(LD=ld.lld AR=llvm-ar NM=llvm-nm OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip READELF=llvm-readelf OBJSIZE=llvm-size)
 
     make O=out ARCH=arm64 $DEFCONFIG LLVM=1
