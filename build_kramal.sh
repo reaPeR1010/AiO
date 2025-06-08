@@ -62,9 +62,9 @@ function compile() {
 
     # Add compiler-specific flags
     if [ "$COMPILER" = "llvm" ]; then
-        MAKE_OPT+=(CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi-)
+        MAKE_OPT+=(CROSS_COMPILE=aarch64-linux-gnu-)
     elif [ "$COMPILER" = "aosp" ]; then
-        MAKE_OPT+=(CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=aarch64-linux-android- CROSS_COMPILE_ARM32=arm-linux-androideabi-)
+        MAKE_OPT+=(CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=aarch64-linux-android-)
     fi
 
     MAKE_OPT+=(CC=clang CXX=clang++ HOSTCC=clang HOSTCXX=clang++)
