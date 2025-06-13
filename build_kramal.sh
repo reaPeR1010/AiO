@@ -15,7 +15,7 @@ DTB=${KERNEL_DIR}/out/arch/arm64/boot/dts/qcom/cust-atoll-ab.dtb
 ZIPNAME="kramal"
 TANGGAL=$(date +"%F%S")
 FINAL_ZIP="${ZIPNAME}-${VERSION}-${KERVER}-${DEVICE}-${TANGGAL}.zip"
-COMPILER="aosp"
+COMPILER="" # llvm or default inbuilt
 VERBOSE=0
 
 # Telegram messaging function
@@ -29,24 +29,11 @@ telegram_push() {
 
 # Set up the Compiler
 if [ "$COMPILER" = "llvm" ]; then
-    mkdir -p clang
-    cd clang || exit 1
-    wget -q https://github.com/ZyCromerZ/Clang/releases/download/21.0.0git-20250228-release/Clang-21.0.0git-20250228.tar.gz
-    tar -xf Clang*
-    cd "$KERNEL_DIR" || exit 1
+    mkdir -p clang && wget -qO- https://github.com/ZyCromerZ/Clang/releases/download/21.0.0git-20250611-release/Clang-21.0.0git-20250611.tar.gz | tar -xz -C clang
     PATH="${KERNEL_DIR}/clang/bin:$PATH"
-elif [ "$COMPILER" = "aosp" ]; then
-#    mkdir clang
-#    cd clang || exit
-#    wget -q https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/master/clang-r522817.tar.gz
-#    tar -xf clang*
-#    cd "$KERNEL_DIR" || exit 1
-    git clone https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9.git --depth=1 gcc
-    git clone https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_arm_arm-linux-androideabi-4.9.git --depth=1 gcc32
-    PATH="${KERNEL_DIR}/gcc/bin:${KERNEL_DIR}/gcc32/bin:${PATH}"
 fi
 
-# Get AnyKernel3 and KSU
+# Get AnyKernel3
 git clone https://github.com/reaPeR1010/AnyKernel3 --depth=1
 
 # Export Vars
@@ -58,20 +45,8 @@ export KBUILD_COMPILER_STRING KBUILD_BUILD_USER KBUILD_BUILD_HOST PROCS
 
 function compile() {
     START=$(date +"%s")
-    MAKE_OPT=()
-
-    # Add compiler-specific flags
-    if [ "$COMPILER" = "llvm" ]; then
-        MAKE_OPT+=(CROSS_COMPILE=aarch64-linux-gnu-)
-    elif [ "$COMPILER" = "aosp" ]; then
-        MAKE_OPT+=(CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=aarch64-linux-android-)
-    fi
-
-    MAKE_OPT+=(CC=clang CXX=clang++ HOSTCC=clang HOSTCXX=clang++)
-    MAKE_OPT+=(LD=ld.lld AR=llvm-ar NM=llvm-nm OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip READELF=llvm-readelf OBJSIZE=llvm-size)
-
     make O=out ARCH=arm64 $DEFCONFIG LLVM=1
-    make -kj"$PROCS" O=out ARCH=arm64 LLVM_IAS=1 V=$VERBOSE "${MAKE_OPT[@]}" 2>&1 | tee error.log
+    make -kj"$PROCS" O=out ARCH=arm64 LLVM=1 V=$VERBOSE 2>&1 | tee error.log
 
     END=$(date +"%s")
     DIFF=$((END - START))
