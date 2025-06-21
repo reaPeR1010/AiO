@@ -6,7 +6,6 @@ KERNEL_DIR="$(pwd)"
 CHAT_ID="-1002295046200"
 TOKEN="7911765578:AAFN90U-GMGmzf5TINpbZKG8C0SuiKmRi_I"
 DEVICE="Miatoll"
-KERVER=$(make kernelversion)
 VERSION=v1
 DEFCONFIG="vendor/xiaomi/miatoll_defconfig"
 IMAGE=${KERNEL_DIR}/out/arch/arm64/boot/Image
@@ -14,7 +13,7 @@ DTBO=${KERNEL_DIR}/out/arch/arm64/boot/dtbo.img
 DTB=${KERNEL_DIR}/out/arch/arm64/boot/dts/qcom/cust-atoll-ab.dtb
 ZIPNAME="nexus"
 TANGGAL=$(date +"%F%S")
-FINAL_ZIP="${ZIPNAME}-${VERSION}-${KERVER}-${DEVICE}-${TANGGAL}.zip"
+FINAL_ZIP="${ZIPNAME}-${VERSION}-${DEVICE}-${TANGGAL}.zip"
 COMPILER="" # llvm or default inbuilt
 VERBOSE=0
 
