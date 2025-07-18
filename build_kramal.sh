@@ -11,9 +11,13 @@ DEFCONFIG="vendor/xiaomi/miatoll_defconfig"
 IMAGE=${KERNEL_DIR}/out/arch/arm64/boot/Image
 DTBO=${KERNEL_DIR}/out/arch/arm64/boot/dtbo.img
 DTB=${KERNEL_DIR}/out/arch/arm64/boot/dts/qcom/cust-atoll-ab.dtb
-ZIPNAME="nexus"
+KERNELNAME="nexus"
 TANGGAL=$(date +"%Y%m%d-%H%M")
-FINAL_ZIP="${ZIPNAME}-${VERSION}-${DEVICE}-${TANGGAL}.zip"
+ZIPNAME="${KERNELNAME}-${VERSION}-${DEVICE}-${TANGGAL}.zip"
+if test -z "$(git rev-parse --show-cdup 2>/dev/null)" &&
+   head=$(git rev-parse --verify HEAD 2>/dev/null); then
+    ZIPNAME="${ZIPNAME::-4}-$(echo $head | cut -c1-8).zip"
+fi
 COMPILER="" # llvm or default inbuilt
 VERBOSE=0
 
@@ -59,12 +63,12 @@ function zipping() {
         mv "$DTB" AnyKernel3/dtb
         mv "$DTBO" AnyKernel3
         cd AnyKernel3 || exit 1
-        zip -r9 "${FINAL_ZIP}" * -x .git README.md
+        zip -r9 "${ZIPNAME}" * -x .git README.md
         cd "$KERNEL_DIR" || exit 1
     fi
 }
 function upload() {
-    telegram_push "AnyKernel3/${FINAL_ZIP}" "Build took : $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) second(s)"
+    telegram_push "AnyKernel3/${ZIPNAME}" "Build took : $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) second(s)"
     exit 0
 }
 # Main execution flow
