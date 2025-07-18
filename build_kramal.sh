@@ -38,9 +38,8 @@ git clone https://github.com/reaPeR1010/AnyKernel3 --depth=1
 # Export Vars
 KBUILD_BUILD_HOST="ArchLinux"
 KBUILD_BUILD_USER="RoHaNRaJ"
-KBUILD_COMPILER_STRING=$(clang --version | head -n 1 | perl -pe 's/http.*?//gs' | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')
 PROCS=$(nproc --all)
-export KBUILD_COMPILER_STRING KBUILD_BUILD_USER KBUILD_BUILD_HOST PROCS
+export KBUILD_BUILD_USER KBUILD_BUILD_HOST PROCS
 
 function compile() {
     START=$(date +"%s")
