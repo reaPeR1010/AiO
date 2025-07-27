@@ -16,7 +16,7 @@ jobs:
         env:
           TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
-          git clone --depth=1 -b vauxite https://reaPeR1010:${TOKEN}@github.com/pa-xe/android_kernel_xiaomi_miatoll.git kernel
+          git clone --depth=1 -b sixteen https://reaPeR1010:${TOKEN}@github.com/pa-xe/android_kernel_xiaomi_sm7125.git kernel
           mv build_kramal.sh kernel/
           cd kernel
           bash build_kramal.sh
