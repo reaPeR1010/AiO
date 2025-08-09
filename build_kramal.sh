@@ -11,7 +11,7 @@ DEFCONFIG="vendor/xiaomi/miatoll_defconfig"
 IMAGE=${KERNEL_DIR}/out/arch/arm64/boot/Image
 DTBO=${KERNEL_DIR}/out/arch/arm64/boot/dtbo.img
 DTB=${KERNEL_DIR}/out/arch/arm64/boot/dts/qcom/cust-atoll-ab.dtb
-KERNELNAME="nexus"
+KERNELNAME="neKSUs"
 TANGGAL=$(date +"%Y%m%d-%H%M")
 ZIPNAME="${KERNELNAME}-${VERSION}-${DEVICE}-${TANGGAL}.zip"
 if test -z "$(git rev-parse --show-cdup 2>/dev/null)" &&
