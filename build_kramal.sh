@@ -20,6 +20,7 @@ if test -z "$(git rev-parse --show-cdup 2>/dev/null)" &&
 fi
 COMPILER="" # llvm or default inbuilt
 VERBOSE=0
+FULL_LTO=1
 
 # Telegram messaging function
 telegram_push() {
@@ -47,6 +48,9 @@ export KBUILD_BUILD_USER KBUILD_BUILD_HOST PROCS
 
 function compile() {
     START=$(date +"%s")
+	if [ "$FULL_LTO" = "1" ]; then
+	echo "# CONFIG_THINLTO is not set" >> arch/arm64/configs/$DEFCONFIG
+	fi
     make O=out ARCH=arm64 $DEFCONFIG LLVM=1
     make -kj"$PROCS" O=out ARCH=arm64 LLVM=1 V=$VERBOSE 2>&1 | tee error.log
 
