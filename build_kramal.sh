@@ -18,7 +18,7 @@ if test -z "$(git rev-parse --show-cdup 2>/dev/null)" &&
    head=$(git rev-parse --verify HEAD 2>/dev/null); then
     ZIPNAME="${ZIPNAME::-4}-$(echo $head | cut -c1-8).zip"
 fi
-COMPILER="" # llvm or default inbuilt
+COMPILER="llvm" # llvm or default (aosp) inbuilt
 VERBOSE=0
 FULL_LTO=1
 
@@ -33,8 +33,9 @@ telegram_push() {
 
 # Set up the Compiler
 if [ "$COMPILER" = "llvm" ]; then
-    mkdir -p clang && wget -qO- https://github.com/ZyCromerZ/Clang/releases/download/21.0.0git-20250611-release/Clang-21.0.0git-20250611.tar.gz | tar -xz -C clang
-    PATH="${KERNEL_DIR}/clang/bin:$PATH"
+mkdir -p clang
+wget -qO- https://www.kernel.org/pub/tools/llvm/files/llvm-21.1.2-x86_64.tar.gz | tar --strip-components=1 -xz -C clang
+PATH="${KERNEL_DIR}/clang/bin:$PATH"
 fi
 
 # Get AnyKernel3
