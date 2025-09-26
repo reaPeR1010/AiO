@@ -18,7 +18,7 @@ if test -z "$(git rev-parse --show-cdup 2>/dev/null)" &&
    head=$(git rev-parse --verify HEAD 2>/dev/null); then
     ZIPNAME="${ZIPNAME::-4}-$(echo $head | cut -c1-8).zip"
 fi
-COMPILER="llvm" # llvm or default (aosp) inbuilt
+COMPILER="" # llvm or default (aosp) inbuilt
 VERBOSE=0
 FULL_LTO=1
 
