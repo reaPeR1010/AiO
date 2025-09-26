@@ -70,7 +70,7 @@ function compile() {
     else
     make O=out ARCH=arm64 $DEFCONFIG LLVM=1
     make -kj"$PROCS" O=out LLVM=1 V=$VERBOSE 2>&1 | tee error.log
-
+    fi
     END=$(date +"%s")
     DIFF=$((END - START))
 
