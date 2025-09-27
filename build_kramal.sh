@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -e
+set -e -o pipefail
 
 KERNEL_DIR="$(pwd)"
 CHAT_ID="-1002295046200"
