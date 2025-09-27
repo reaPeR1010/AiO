@@ -45,7 +45,7 @@ if [ "$COMPILER" = "llvm" ]; then
 mkdir -p clang
 wget -qO- https://www.kernel.org/pub/tools/llvm/files/llvm-21.1.2-x86_64.tar.gz | tar --strip-components=1 -xz -C clang
 PATH="${KERNEL_DIR}/clang/bin:$PATH"
-del_config POLLY_CLANG
+del_config CONFIG_POLLY_CLANG
 elif [ "$COMPILER" = "gcc" ]; then
 mkdir -p gcc-arm64 gcc-arm
 wget -qO- https://mirrors.edge.kernel.org/pub/tools/crosstool/files/bin/x86_64/15.2.0/x86_64-gcc-15.2.0-nolibc-aarch64-linux.tar.gz | tar --strip-components=2 -xz -C gcc-arm64
