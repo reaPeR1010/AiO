@@ -21,16 +21,6 @@ fi
 COMPILER="llvm" # llvm or default (aosp) inbuilt
 VERBOSE=0
 
-# Modify defconfig
-del_config() {
-    sed -i "/^$1=y$/d" "arch/arm64/configs/$DEFCONFIG"
-}
-
-add_config() {
-    del_config "$1"
-    echo "# $1 is not set" >> "arch/arm64/configs/$DEFCONFIG"
-}
-
 # Telegram messaging function
 telegram_push() {
   curl --progress-bar -F document=@"$1" https://api.telegram.org/bot$TOKEN/sendDocument \
@@ -42,14 +32,12 @@ telegram_push() {
 
 # Set up the Compiler
 if [ "$COMPILER" = "llvm" ]; then
+echo -e "\e[32mCompiler Set As LLVM Clang\e[0m"
 mkdir -p clang
 wget -qO- https://www.kernel.org/pub/tools/llvm/files/llvm-21.1.2-x86_64.tar.gz | tar --strip-components=1 -xz -C clang
-PATH="${KERNEL_DIR}/clang/bin:$PATH"
-elif [ "$COMPILER" = "gcc" ]; then
-mkdir -p gcc-arm64 gcc-arm
-wget -qO- https://mirrors.edge.kernel.org/pub/tools/crosstool/files/bin/x86_64/15.2.0/x86_64-gcc-15.2.0-nolibc-aarch64-linux.tar.gz | tar --strip-components=2 -xz -C gcc-arm64
-wget -qO- https://mirrors.edge.kernel.org/pub/tools/crosstool/files/bin/x86_64/15.2.0/x86_64-gcc-15.2.0-nolibc-arm-linux-gnueabi.tar.gz | tar --strip-components=2 -xz -C gcc-arm
-PATH="${KERNEL_DIR}/gcc-arm64/bin/:${KERNEL_DIR}/gcc-arm/bin/:/usr/bin:${PATH}"
+export PATH="${KERNEL_DIR}/clang/bin:$PATH"
+else
+echo -e "\e[92mCompiler Not Set, using inbuilt AOSP Clang\e[0m"
 fi
 
 # Get AnyKernel3
@@ -63,14 +51,8 @@ export KBUILD_BUILD_USER KBUILD_BUILD_HOST PROCS
 
 function compile() {
     START=$(date +"%s")
-    if [ "$COMPILER" = "gcc" ]; then
-    del_config CONFIG_TOOLS_SUPPORT_RELR
-    make O=out ARCH=arm64 $DEFCONFIG
-    make -kj"$PROCS" O=out CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_COMPAT=arm-linux-gnueabi- V=$VERBOSE 2>&1 | tee error.log
-    else
     make O=out ARCH=arm64 $DEFCONFIG LLVM=1
     make -kj"$PROCS" O=out LLVM=1 V=$VERBOSE 2>&1 | tee error.log
-    fi
     END=$(date +"%s")
     DIFF=$((END - START))
 
