@@ -18,7 +18,7 @@ if test -z "$(git rev-parse --show-cdup 2>/dev/null)" &&
    head=$(git rev-parse --verify HEAD 2>/dev/null); then
     ZIPNAME="${ZIPNAME::-4}-$(echo $head | cut -c1-8).zip"
 fi
-COMPILER="" # llvm or default (aosp) inbuilt
+COMPILER="llvm" # llvm or default (aosp) inbuilt
 VERBOSE=0
 
 # Modify defconfig
@@ -45,6 +45,7 @@ if [ "$COMPILER" = "llvm" ]; then
 mkdir -p clang
 wget -qO- https://www.kernel.org/pub/tools/llvm/files/llvm-21.1.2-x86_64.tar.gz | tar --strip-components=1 -xz -C clang
 PATH="${KERNEL_DIR}/clang/bin:$PATH"
+del_config POLLY_CLANG
 elif [ "$COMPILER" = "gcc" ]; then
 mkdir -p gcc-arm64 gcc-arm
 wget -qO- https://mirrors.edge.kernel.org/pub/tools/crosstool/files/bin/x86_64/15.2.0/x86_64-gcc-15.2.0-nolibc-aarch64-linux.tar.gz | tar --strip-components=2 -xz -C gcc-arm64
