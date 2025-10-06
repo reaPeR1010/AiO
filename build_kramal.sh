@@ -45,7 +45,7 @@ git clone https://github.com/reaPeR1010/AnyKernel3 --depth=1
 
 # Export Vars
 KBUILD_BUILD_HOST="ArchLinux"
-KBUILD_BUILD_USER="RoHaNRaJ"
+KBUILD_BUILD_USER="rbnj"
 PROCS=$(nproc --all)
 export KBUILD_BUILD_USER KBUILD_BUILD_HOST PROCS
 
